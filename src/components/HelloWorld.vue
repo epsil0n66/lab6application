@@ -42,7 +42,7 @@
           class="ml-3 mt-3"
           elevation="3"
           @click="handle_button2()">
-            Создать сообщение
+            Создать сообщени
           </v-btn>
         </p>
       </v-col>
