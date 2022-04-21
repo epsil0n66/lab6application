@@ -1,58 +1,85 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <v-container>
+    <v-row class="text-center">
+      <v-col cols="12">
+        <v-img
+          :src="require('../assets/logo.png')"
+          class="my-3"
+          contain
+          height="200"
+        />
+      </v-col>
+      <v-dialog
+      v-model="dialog"
+      width="25vw">
+        <v-card>
+          <v-card-title class="text-h5 grey lighten-2">
+           {{dialog_message}}
+            <v-icon
+            :color="icon_color"
+            class="ml-3 mdi-spin">
+              {{dialog_icon}}
+            </v-icon>
+          </v-card-title>
+        </v-card>
+      </v-dialog>
+      <v-col class="mb-4">
+        <h1 class="display-2 font-weight-bold mb-3">
+          Приложение на Vue
+        </h1>
+
+        <p class="subheading font-weight-regular">
+          <v-btn
+          class="mr-3 mt-3"
+          elevation="3"
+          color="red lighten-2"
+          @click="handle_button()">
+            Создать ошибку
+          </v-btn>
+
+          <v-btn
+          color="green lighten-2"
+          class="ml-3 mt-3"
+          elevation="3"
+          @click="handle_button2()">
+            Создать сообщение
+          </v-btn>
+        </p>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
-</script>
+import * as Sentry from "@sentry/vue";
+Sentry.setTag("custom_tag", "VueJS");
+Sentry.setTag("another_tag", "Vue > React");
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+  export default {
+    name: 'HelloWorld',
+
+    data: () => ({
+      dialog: false,
+      dialog_message: null,
+      dialog_icon: null,
+      icon_color: null,
+    }),
+    methods: {
+      handle_button(){
+        this.dialog = true
+        this.dialog_message = 'Ошибка создана'
+        this.dialog_icon = 'mdi-close'
+        this.icon_color = 'red'
+        throw new Error('Sentry error')
+
+      },
+      handle_button2(){
+        this.dialog = true
+        this.dialog_message = 'Сообщение создано'
+        this.dialog_icon = 'mdi-check'
+        this.icon_color = 'green'
+        Sentry.captureMessage("Sentry message");
+      }
+    }
+  }
+</script>
